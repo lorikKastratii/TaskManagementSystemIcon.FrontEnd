@@ -5,6 +5,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import TasksPage from './pages/TasksPage'
+import DashboardPage from './pages/DashboardPage'
 
 export default function App() {
   return (
@@ -20,6 +21,14 @@ export default function App() {
                 <TaskProvider>
                   <TasksPage />
                 </TaskProvider>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
               </ProtectedRoute>
             }
           />

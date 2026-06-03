@@ -61,6 +61,55 @@ button { font-family: inherit; cursor: pointer; }
 }
 .navbar__user { display: flex; align-items: center; gap: 0.75rem; }
 .navbar__email { color: var(--text-muted); font-size: 0.9rem; }
+.navbar__nav { display: flex; gap: 0.35rem; }
+.navbar__link {
+  padding: 0.4rem 0.8rem; border-radius: 8px;
+  color: var(--text-muted); font-weight: 600; font-size: 0.9rem;
+  text-decoration: none; transition: background 0.15s, color 0.15s;
+}
+.navbar__link:hover { background: var(--surface-muted); color: var(--text); }
+.navbar__link--active { background: var(--primary); color: #fff; }
+.navbar__link--active:hover { background: var(--primary-dark); color: #fff; }
+
+/* ---------------------------------------------------------------- dashboard */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.1rem 1.2rem;
+}
+.stat-card__value { font-size: 1.9rem; font-weight: 700; line-height: 1; }
+.stat-card__label { margin-top: 0.4rem; color: var(--text-muted); font-size: 0.85rem; }
+
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.panel {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+  padding: 1.2rem 1.3rem; margin-bottom: 1.5rem;
+}
+.panel__title { margin: 0 0 1rem; font-size: 1.05rem; }
+
+.breakdown { display: flex; flex-direction: column; gap: 0.65rem; }
+.breakdown__row { display: grid; grid-template-columns: 90px 1fr 32px; align-items: center; gap: 0.6rem; }
+.breakdown__label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; }
+.breakdown__track { background: var(--surface-muted); border-radius: 999px; height: 12px; overflow: hidden; }
+.breakdown__bar { height: 100%; border-radius: 999px; min-width: 2px; transition: width 0.3s; }
+.breakdown__count { font-size: 0.85rem; font-weight: 600; text-align: right; }
+
+.stat-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.stat-table th, .stat-table td { padding: 0.55rem 0.6rem; text-align: left; }
+.stat-table th { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
+.stat-table td { border-bottom: 1px solid var(--border); }
+.stat-table tbody tr:last-child td { border-bottom: none; }
+.stat-table th:not(:first-child), .stat-table td:not(:first-child) { text-align: center; width: 14%; }
 
 /* ---------------------------------------------------------------- buttons */
 .btn {
