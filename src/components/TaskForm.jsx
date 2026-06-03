@@ -102,7 +102,8 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
             </label>
           </div>
 
-          {people.length > 0 && (
+          {people.length > 0 ? (
+            // Admins choose the assignee; the page persists the change via the assign endpoint.
             <label className="form__label">
               Assignee
               <select
@@ -116,6 +117,14 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
                 ))}
               </select>
             </label>
+          ) : (
+            // Regular users see who the task is assigned to, but cannot change it.
+            task && (
+              <label className="form__label">
+                Assignee
+                <input className="input" value={task.assigneeName ?? 'Unassigned'} disabled readOnly />
+              </label>
+            )
           )}
 
           {task && (
