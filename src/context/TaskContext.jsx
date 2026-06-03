@@ -77,6 +77,26 @@ export function TaskProvider({ children }) {
     }
   }
 
+  // Kanban move: drop a task into a lane (newStatus) at a new position. `orderedIds` is the full
+  // visual order across all lanes after the move. Applies optimistically, persists the status
+  // change (only if the lane changed) and the new ordering, and reverts on failure.
+  async function moveTask(task, newStatus, orderedIds) {
+    const previous = tasks
+    const byId = new Map(previous.map((t) => [t.id, t]))
+    byId.set(task.id, { ...task, status: newStatus, isCompleted: newStatus === 'Done' })
+    const next = orderedIds.map((id, index) => ({ ...byId.get(id), sortOrder: index }))
+    setTasks(next)
+    try {
+      if (task.status !== newStatus) {
+        await taskService.update(task.id, { status: newStatus })
+      }
+      await taskService.reorder(orderedIds)
+    } catch {
+      setTasks(previous)
+      setError('Failed to move the task.')
+    }
+  }
+
   const value = useMemo(
     () => ({
       tasks,
@@ -93,6 +113,7 @@ export function TaskProvider({ children }) {
       deleteTask,
       assignTask,
       reorderTasks,
+      moveTask,
     }),
     [tasks, people, filters, loading, error, loadTasks, loadPeople],
   )
