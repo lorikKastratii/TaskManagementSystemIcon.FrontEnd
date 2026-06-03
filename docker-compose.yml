@@ -1,0 +1,15 @@
+# ---------------------------------------------------------------------------
+# Standalone frontend container (Nginx-served production build).
+#   docker compose up --build      ->  http://localhost:3000
+# The Task Manager API is a separate repo/stack; point VITE_API_URL at it.
+# Default targets the backend Docker stack's published API port (5000).
+# ---------------------------------------------------------------------------
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: "${VITE_API_URL:-http://localhost:5000/api}"
+    ports:
+      - "3000:80"
