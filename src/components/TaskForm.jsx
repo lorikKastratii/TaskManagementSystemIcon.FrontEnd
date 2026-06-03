@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { STATUSES, PRIORITIES, STATUS_LABELS } from '../constants'
+import { STATUSES, PRIORITIES, STATUS_LABELS, PRIORITY_COLORS, STATUS_COLORS } from '../constants'
+import { taskService } from '../services/taskService'
 
 // Modal create/edit form. `task` null => create mode; otherwise edit mode.
 // `people` is supplied for admins so they can choose an assignee when creating a task.
@@ -14,8 +15,29 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
   })
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [enhancing, setEnhancing] = useState(false)
 
   const update = (patch) => setForm((f) => ({ ...f, ...patch }))
+
+  // Ask the backend (acting as a Product Owner via OpenAI) to rewrite the description, then
+  // drop the result straight into the field so the user can review/tweak before saving.
+  async function enhanceDescription() {
+    if (!form.title.trim()) {
+      setError('Add a title first so the AI has something to work with.')
+      return
+    }
+    setError(null)
+    setEnhancing(true)
+    try {
+      const { description } = await taskService.enhanceDescription(form.title.trim(), form.description.trim())
+      update({ description })
+    } catch (err) {
+      const errors = err.response?.data?.errors
+      setError(errors ? Object.values(errors).flat()[0] : 'Could not enhance the description.')
+    } finally {
+      setEnhancing(false)
+    }
+  }
 
   async function handleSubmit(e) {
     e.preventDefault()
@@ -62,31 +84,53 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
           </label>
 
           <label className="form__label">
-            Description
+            <span className="form__label-row">
+              Description
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                onClick={enhanceDescription}
+                disabled={enhancing || saving}
+                title="Rewrite the description with AI acting as a Product Owner"
+              >
+                {enhancing ? 'Enhancing…' : '✨ Enhance with AI'}
+              </button>
+            </span>
             <textarea
-              className="input"
-              rows={3}
+              className="input input--textarea"
+              rows={10}
               maxLength={1000}
               value={form.description}
               onChange={(e) => update({ description: e.target.value })}
+              disabled={enhancing}
             />
           </label>
 
           <div className="form__row">
             <label className="form__label">
               Status
-              <select className="input" value={form.status} onChange={(e) => update({ status: e.target.value })}>
+              <select
+                className="input"
+                style={{ color: STATUS_COLORS[form.status], fontWeight: 600 }}
+                value={form.status}
+                onChange={(e) => update({ status: e.target.value })}
+              >
                 {STATUSES.map((s) => (
-                  <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                  <option key={s} value={s} style={{ color: STATUS_COLORS[s] }}>{STATUS_LABELS[s]}</option>
                 ))}
               </select>
             </label>
 
             <label className="form__label">
               Priority
-              <select className="input" value={form.priority} onChange={(e) => update({ priority: e.target.value })}>
+              <select
+                className="input"
+                style={{ color: PRIORITY_COLORS[form.priority], fontWeight: 600 }}
+                value={form.priority}
+                onChange={(e) => update({ priority: e.target.value })}
+              >
                 {PRIORITIES.map((p) => (
-                  <option key={p} value={p}>{p}</option>
+                  <option key={p} value={p} style={{ color: PRIORITY_COLORS[p] }}>{p}</option>
                 ))}
               </select>
             </label>

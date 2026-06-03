@@ -3,6 +3,9 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString()
 }
 
+// Cards show only a short preview of the description; the full text is in the details modal.
+const DESC_PREVIEW_LIMIT = 90
+
 // Stops a mousedown from starting a card drag, so interactive controls stay usable even though
 // the whole card is the drag handle.
 const stopDrag = (e) => e.stopPropagation()
@@ -11,6 +14,9 @@ const stopDrag = (e) => e.stopPropagation()
 // parent) and clicking it opens the details modal. Interactive controls swallow the event so they
 // neither start a drag nor open the modal.
 export default function TaskCard({ task, onToggle, onOpen, onDelete }) {
+  const isLong = task.description && task.description.length > DESC_PREVIEW_LIMIT
+  const preview = isLong ? task.description.slice(0, DESC_PREVIEW_LIMIT).trimEnd() : task.description
+
   return (
     <div
       className={`card card--draggable ${task.isCompleted ? 'card--done' : ''}`}
@@ -29,7 +35,12 @@ export default function TaskCard({ task, onToggle, onOpen, onDelete }) {
 
       <div className="card__body">
         <div className="card__title">{task.title}</div>
-        {task.description && <div className="card__desc">{task.description}</div>}
+        {task.description && (
+          <div className="card__desc">
+            {preview}
+            {isLong && <>… <span className="card__more">see more</span></>}
+          </div>
+        )}
         <div className="card__meta">
           <span className={`badge badge--priority-${task.priority.toLowerCase()}`}>
             {task.priority}

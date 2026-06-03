@@ -80,6 +80,7 @@ button { font-family: inherit; cursor: pointer; }
 .btn--icon { background: transparent; padding: 0.3rem 0.45rem; font-size: 1rem; }
 .btn--icon:hover { background: var(--surface-muted); border-radius: 6px; }
 .btn--danger:hover { background: #fee2e2; }
+.btn--sm { padding: 0.25rem 0.55rem; font-size: 0.75rem; }
 
 /* ---------------------------------------------------------------- inputs */
 .input {
@@ -92,6 +93,9 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--text);
 }
 .input:focus { outline: 2px solid rgba(225, 29, 72, 0.25); border-color: var(--primary); }
+/* Selects keep focus after a choice is made; don't leave a colored ring/border lingering. */
+select.input:focus { outline: none; border-color: var(--border); }
+.input--textarea { min-height: 15rem; resize: vertical; line-height: 1.45; }
 
 /* ---------------------------------------------------------------- filters */
 .filters {
@@ -198,6 +202,8 @@ button { font-family: inherit; cursor: pointer; }
 .card__body { flex: 1; min-width: 0; }
 .card__title { font-weight: 600; }
 .card__desc { color: var(--text-muted); font-size: 0.88rem; margin-top: 0.15rem; }
+.card__more { color: var(--primary); font-weight: 600; cursor: pointer; }
+.card__more:hover { text-decoration: underline; }
 .card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin-top: 0.5rem; }
 .card__due { color: var(--text-muted); font-size: 0.8rem; }
 .card__actions { display: flex; gap: 0.15rem; }
@@ -243,6 +249,7 @@ button { font-family: inherit; cursor: pointer; }
 /* ---------------------------------------------------------------- forms / modal */
 .form { display: flex; flex-direction: column; gap: 0.85rem; }
 .form__label { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+.form__label-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
 .form__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.6rem; }
 .form__hint { font-weight: 400; font-size: 0.75rem; color: var(--text-muted); margin: 0; }
 .form__error { color: var(--primary-dark); background: #fee2e2; padding: 0.5rem 0.7rem; border-radius: 8px; font-size: 0.85rem; margin: 0; }
