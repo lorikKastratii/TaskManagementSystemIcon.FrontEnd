@@ -14,6 +14,9 @@ function toParams(filters = {}) {
 export const taskService = {
   list: (filters) => api.get('/tasks', { params: toParams(filters) }).then((r) => r.data),
   create: (payload) => api.post('/tasks', payload).then((r) => r.data),
+  // AI: rewrites the draft description as a Product Owner would. Returns { description }.
+  enhanceDescription: (title, description) =>
+    api.post('/tasks/enhance-description', { title, description }).then((r) => r.data),
   update: (id, payload) => api.put(`/tasks/${id}`, payload).then((r) => r.data),
   setCompletion: (id, isCompleted) =>
     api.patch(`/tasks/${id}/complete`, null, { params: { isCompleted } }).then((r) => r.data),
