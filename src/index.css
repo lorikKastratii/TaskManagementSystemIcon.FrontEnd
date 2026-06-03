@@ -94,11 +94,13 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ---------------------------------------------------------------- filters */
 .filters {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.6rem;
   margin-bottom: 1.25rem;
 }
+.filters > .input { flex: 1 1 140px; min-width: 0; }
+.filters > input[type="search"] { flex: 2 1 220px; }
 
 /* ---------------------------------------------------------------- list / cards */
 .list { display: flex; flex-direction: column; gap: 0.6rem; }
@@ -140,6 +142,19 @@ button { font-family: inherit; cursor: pointer; }
 .badge--priority-low { background: #f1f5f9; color: #64748b; }
 .badge--priority-medium { background: #fef9c3; color: #a16207; }
 .badge--priority-high { background: #fee2e2; color: #b91c1c; }
+.badge--assignee { background: #ede9fe; color: #6d28d9; text-transform: none; }
+.badge--admin { background: #fde68a; color: #92400e; }
+
+/* Inline reassign control on a card (admins only). */
+.card__assign {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.input--sm { padding: 0.25rem 0.4rem; font-size: 0.82rem; width: auto; }
 
 .empty {
   text-align: center;

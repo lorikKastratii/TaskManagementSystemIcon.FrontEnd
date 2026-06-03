@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
 
   function persistSession(auth) {
     tokenStorage.set(auth.token)
-    setUser({ id: auth.userId, email: auth.email })
+    setUser({ id: auth.userId, email: auth.email, roles: auth.roles ?? [] })
   }
 
   async function login(credentials) {
@@ -48,7 +48,15 @@ export function AuthProvider({ children }) {
   }
 
   const value = useMemo(
-    () => ({ user, loading, isAuthenticated: !!user, login, register, logout }),
+    () => ({
+      user,
+      loading,
+      isAuthenticated: !!user,
+      isAdmin: !!user?.roles?.includes('Admin'),
+      login,
+      register,
+      logout,
+    }),
     [user, loading],
   )
 

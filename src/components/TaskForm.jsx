@@ -2,13 +2,15 @@ import { useState } from 'react'
 import { STATUSES, PRIORITIES, STATUS_LABELS } from '../constants'
 
 // Modal create/edit form. `task` null => create mode; otherwise edit mode.
-export default function TaskForm({ task, onSubmit, onClose }) {
+// `people` is supplied for admins so they can choose an assignee when creating a task.
+export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
   const [form, setForm] = useState({
     title: task?.title ?? '',
     description: task?.description ?? '',
     status: task?.status ?? 'Todo',
     priority: task?.priority ?? 'Medium',
     dueDate: task?.dueDate ? task.dueDate.substring(0, 10) : '',
+    assigneeId: task?.assigneeId ?? '',
   })
   const [error, setError] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -26,6 +28,10 @@ export default function TaskForm({ task, onSubmit, onClose }) {
         status: form.status,
         priority: form.priority,
         dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
+      }
+      // Assignee is only settable on create, and only by admins (who get `people`).
+      if (!task && people.length > 0 && form.assigneeId) {
+        payload.assigneeId = form.assigneeId
       }
       await onSubmit(payload)
       onClose()
@@ -95,6 +101,22 @@ export default function TaskForm({ task, onSubmit, onClose }) {
               />
             </label>
           </div>
+
+          {!task && people.length > 0 && (
+            <label className="form__label">
+              Assignee
+              <select
+                className="input"
+                value={form.assigneeId}
+                onChange={(e) => update({ assigneeId: e.target.value })}
+              >
+                <option value="">Assign to me</option>
+                {people.map((p) => (
+                  <option key={p.id} value={p.id}>{p.displayName}</option>
+                ))}
+              </select>
+            </label>
+          )}
 
           {error && <p className="form__error">{error}</p>}
 

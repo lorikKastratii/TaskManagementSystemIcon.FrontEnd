@@ -2,7 +2,7 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import TaskCard from './TaskCard'
 
 // Renders the draggable, reorderable list of tasks.
-export default function TaskList({ tasks, onReorder, onToggle, onEdit, onDelete }) {
+export default function TaskList({ tasks, onReorder, onToggle, onEdit, onDelete, onAssign, people = [] }) {
   function handleDragEnd(result) {
     if (!result.destination || result.destination.index === result.source.index) return
     const reordered = Array.from(tasks)
@@ -33,6 +33,8 @@ export default function TaskList({ tasks, onReorder, onToggle, onEdit, onDelete 
                       onToggle={onToggle}
                       onEdit={onEdit}
                       onDelete={onDelete}
+                      onAssign={onAssign}
+                      people={people}
                       dragHandleProps={dragProvided.dragHandleProps}
                     />
                   </div>

@@ -1,7 +1,8 @@
 import { STATUSES, PRIORITIES } from '../constants'
 
 // Controlled filter bar. Lifts every change up to the parent via onChange.
-export default function TaskFilters({ filters, onChange }) {
+// `people` is only supplied for admins; when present an assignee filter is shown.
+export default function TaskFilters({ filters, onChange, people = [] }) {
   const update = (patch) => onChange({ ...filters, ...patch })
 
   return (
@@ -13,6 +14,19 @@ export default function TaskFilters({ filters, onChange }) {
         value={filters.search}
         onChange={(e) => update({ search: e.target.value })}
       />
+
+      {people.length > 0 && (
+        <select
+          className="input"
+          value={filters.assigneeId}
+          onChange={(e) => update({ assigneeId: e.target.value })}
+        >
+          <option value="">All assignees</option>
+          {people.map((p) => (
+            <option key={p.id} value={p.id}>{p.displayName}</option>
+          ))}
+        </select>
+      )}
 
       <select className="input" value={filters.status} onChange={(e) => update({ status: e.target.value })}>
         <option value="">All statuses</option>
