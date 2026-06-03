@@ -65,7 +65,7 @@ export default function TasksPage() {
       <main className="container container--wide">
         <div className="page__header">
           <div>
-            <h1 className="page__title">{isAdmin ? 'All tasks' : 'Your tasks'}</h1>
+            <h1 className="page__title">All tasks</h1>
             <p className="page__subtitle">{remaining} active · {tasks.length} total</p>
           </div>
           <button className="btn btn--primary" onClick={openCreate}>+ New task</button>
