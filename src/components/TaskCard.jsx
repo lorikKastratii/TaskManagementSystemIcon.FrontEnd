@@ -6,7 +6,10 @@ function formatDate(value) {
 }
 
 // Presentational card for a single task. All actions are delegated to the parent.
-export default function TaskCard({ task, onToggle, onEdit, onDelete, dragHandleProps }) {
+// `people`/`onAssign` are supplied for admins so they can reassign the task inline.
+export default function TaskCard({ task, onToggle, onEdit, onDelete, onAssign, people = [], dragHandleProps }) {
+  const isAdmin = people.length > 0
+
   return (
     <div className={`card ${task.isCompleted ? 'card--done' : ''}`}>
       <div className="card__drag" {...dragHandleProps} title="Drag to reorder">⠿</div>
@@ -30,7 +33,24 @@ export default function TaskCard({ task, onToggle, onEdit, onDelete, dragHandleP
             {task.priority}
           </span>
           {task.dueDate && <span className="card__due">Due {formatDate(task.dueDate)}</span>}
+          {task.assigneeName && <span className="badge badge--assignee">@{task.assigneeName}</span>}
         </div>
+
+        {isAdmin && (
+          <label className="card__assign">
+            Assignee
+            <select
+              className="input input--sm"
+              value={task.assigneeId ?? ''}
+              onChange={(e) => onAssign(task, e.target.value)}
+            >
+              <option value="">Unassigned</option>
+              {people.map((p) => (
+                <option key={p.id} value={p.id}>{p.displayName}</option>
+              ))}
+            </select>
+          </label>
+        )}
       </div>
 
       <div className="card__actions">

@@ -1,7 +1,7 @@
 import { useAuth } from '../context/AuthContext'
 
 export default function Navbar() {
-  const { user, logout } = useAuth()
+  const { user, isAdmin, logout } = useAuth()
 
   return (
     <header className="navbar">
@@ -11,6 +11,7 @@ export default function Navbar() {
       </div>
       {user && (
         <div className="navbar__user">
+          {isAdmin && <span className="badge badge--admin">Admin</span>}
           <span className="navbar__email">{user.email}</span>
           <button className="btn btn--ghost" onClick={logout}>
             Log out

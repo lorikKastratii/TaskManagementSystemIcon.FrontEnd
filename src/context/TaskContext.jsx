@@ -1,15 +1,26 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 import { taskService } from '../services/taskService'
+import { userService } from '../services/userService'
 
 const TaskContext = createContext(null)
 
-const EMPTY_FILTERS = { status: '', priority: '', isCompleted: '', search: '' }
+const EMPTY_FILTERS = { status: '', priority: '', isCompleted: '', search: '', assigneeId: '' }
 
 export function TaskProvider({ children }) {
   const [tasks, setTasks] = useState([])
+  const [people, setPeople] = useState([])
   const [filters, setFilters] = useState(EMPTY_FILTERS)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  // Admin-only: the set of accounts a task can be assigned to. Loaded once.
+  const loadPeople = useCallback(async () => {
+    try {
+      setPeople(await userService.list())
+    } catch {
+      // Non-admins get 403 here; silently ignore so the rest of the page still works.
+    }
+  }, [])
 
   const loadTasks = useCallback(async (activeFilters) => {
     setLoading(true)
@@ -43,6 +54,17 @@ export function TaskProvider({ children }) {
     setTasks((prev) => prev.filter((t) => t.id !== id))
   }
 
+  // Admin-only: reassign a task. If a single-assignee filter is active and the task no longer
+  // matches it, drop it from the visible list; otherwise update it in place.
+  async function assignTask(id, assigneeId) {
+    const updated = await taskService.assign(id, assigneeId)
+    setTasks((prev) =>
+      filters.assigneeId && updated.assigneeId !== filters.assigneeId
+        ? prev.filter((t) => t.id !== id)
+        : prev.map((t) => (t.id === id ? updated : t)),
+    )
+  }
+
   // Optimistically reorder locally, then persist. Revert on failure.
   async function reorderTasks(reordered) {
     const previous = tasks
@@ -58,18 +80,21 @@ export function TaskProvider({ children }) {
   const value = useMemo(
     () => ({
       tasks,
+      people,
       filters,
       loading,
       error,
       setFilters,
       loadTasks,
+      loadPeople,
       createTask,
       updateTask,
       toggleComplete,
       deleteTask,
+      assignTask,
       reorderTasks,
     }),
-    [tasks, filters, loading, error, loadTasks],
+    [tasks, people, filters, loading, error, loadTasks, loadPeople],
   )
 
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>
