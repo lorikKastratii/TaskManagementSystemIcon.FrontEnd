@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Navbar from '../components/Navbar'
 import TaskFilters from '../components/TaskFilters'
-import TaskList from '../components/TaskList'
+import TaskBoard from '../components/TaskBoard'
 import TaskForm from '../components/TaskForm'
 import { useTasks } from '../context/TaskContext'
 import { useAuth } from '../context/AuthContext'
@@ -10,7 +10,7 @@ export default function TasksPage() {
   const { isAdmin } = useAuth()
   const {
     tasks, people, filters, loading, error,
-    setFilters, loadTasks, loadPeople, createTask, updateTask, toggleComplete, deleteTask, assignTask, reorderTasks,
+    setFilters, loadTasks, loadPeople, createTask, updateTask, toggleComplete, deleteTask, assignTask, moveTask,
   } = useTasks()
 
   const [editing, setEditing] = useState(null) // task being edited
@@ -43,15 +43,26 @@ export default function TasksPage() {
     }
   }
 
-  const submit = (payload) =>
-    editing ? updateTask(editing.id, payload) : createTask(payload)
+  // On save: create includes the assignee directly; edit updates the fields and, if an admin
+  // changed the assignee, persists that separately via the assign endpoint.
+  async function submit(payload) {
+    if (!editing) {
+      await createTask(payload)
+      return
+    }
+    const { assigneeId, ...fields } = payload
+    await updateTask(editing.id, fields)
+    if (isAdmin && (assigneeId ?? '') !== (editing.assigneeId ?? '')) {
+      await assignTask(editing.id, assigneeId || null)
+    }
+  }
 
   const remaining = tasks.filter((t) => !t.isCompleted).length
 
   return (
     <div className="page">
       <Navbar />
-      <main className="container">
+      <main className="container container--wide">
         <div className="page__header">
           <div>
             <h1 className="page__title">{isAdmin ? 'All tasks' : 'Your tasks'}</h1>
@@ -66,14 +77,12 @@ export default function TasksPage() {
         {loading ? (
           <p className="empty">Loading…</p>
         ) : (
-          <TaskList
+          <TaskBoard
             tasks={tasks}
-            onReorder={reorderTasks}
+            onMove={moveTask}
             onToggle={toggleComplete}
-            onEdit={openEdit}
+            onOpen={openEdit}
             onDelete={handleDelete}
-            onAssign={assignTask}
-            people={people}
           />
         )}
       </main>

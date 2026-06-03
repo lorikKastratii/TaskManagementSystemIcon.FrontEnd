@@ -29,8 +29,8 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
         priority: form.priority,
         dueDate: form.dueDate ? new Date(form.dueDate).toISOString() : null,
       }
-      // Assignee is only settable on create, and only by admins (who get `people`).
-      if (!task && people.length > 0 && form.assigneeId) {
+      // Assignee is editable only by admins (who get `people`); the page persists the change.
+      if (people.length > 0) {
         payload.assigneeId = form.assigneeId
       }
       await onSubmit(payload)
@@ -102,7 +102,7 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
             </label>
           </div>
 
-          {!task && people.length > 0 && (
+          {people.length > 0 && (
             <label className="form__label">
               Assignee
               <select
@@ -110,12 +110,19 @@ export default function TaskForm({ task, onSubmit, onClose, people = [] }) {
                 value={form.assigneeId}
                 onChange={(e) => update({ assigneeId: e.target.value })}
               >
-                <option value="">Assign to me</option>
+                <option value="">{task ? 'Unassigned' : 'Assign to me'}</option>
                 {people.map((p) => (
                   <option key={p.id} value={p.id}>{p.displayName}</option>
                 ))}
               </select>
             </label>
+          )}
+
+          {task && (
+            <p className="form__hint">
+              Created {new Date(task.createdAt).toLocaleString()}
+              {task.updatedAt && <> · Updated {new Date(task.updatedAt).toLocaleString()}</>}
+            </p>
           )}
 
           {error && <p className="form__error">{error}</p>}
