@@ -14,6 +14,11 @@
 
 * { box-sizing: border-box; }
 
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   margin: 0;
   background: var(--surface-muted);
@@ -49,6 +54,8 @@ button { font-family: inherit; cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
   padding: 0.85rem 1.25rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -312,6 +319,10 @@ select.input:focus { outline: none; border-color: var(--border); }
 }
 .modal {
   width: 100%; max-width: 480px;
+  max-height: calc(100vh - 2rem);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--surface);
   border-radius: 16px;
   padding: 1.5rem;
@@ -339,4 +350,16 @@ select.input:focus { outline: none; border-color: var(--border); }
   .filters { grid-template-columns: 1fr 1fr; }
   .form__row { grid-template-columns: 1fr; }
   .navbar__email { display: none; }
+
+  .container { padding: 1.25rem 1rem 3rem; }
+
+  /* Stack the navbar so it never spills past the screen edge. */
+  .navbar { padding: 0.7rem 1rem; }
+  .navbar__nav { order: 3; flex-basis: 100%; justify-content: center; }
+  .navbar__user { gap: 0.5rem; }
+
+  .page__header { flex-wrap: wrap; }
+
+  /* Wide stats table scrolls within its panel instead of stretching the page. */
+  .stat-table { display: block; overflow-x: auto; white-space: nowrap; }
 }
